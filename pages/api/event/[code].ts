@@ -4,7 +4,14 @@ import airtable from "airtable";
 const base = airtable.base("appBDzOsE0ng4xGwY");
 const events = base("Events");
 
-export async function getEvent(code: string) {
+export interface Event {
+  Code: string;
+  Name: string;
+  Running: boolean;
+  Amount: number;
+}
+
+export async function getEvent(code: string): Promise<Event> {
   const matchingEvents = await events
     .select({
       maxRecords: 1,

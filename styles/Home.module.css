@@ -124,3 +124,8 @@
 .container h1 {
   font-weight: lighter;
 }
+
+.container a {
+  color: #0070f3;
+  text-decoration: none;
+}
