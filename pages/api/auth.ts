@@ -3,7 +3,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Event, getEvent } from "./event/[code]";
 
 import airtable from "airtable";
-import axios from "axios";
+
+import { createUser, userExists, send } from "../../lib/hn";
 
 const base = airtable.base("appBDzOsE0ng4xGwY");
 const logs = base("Logs");
@@ -43,36 +44,16 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
+  if (!(await userExists(user))) {
+    await createUser(user);
+    console.log(`created user: ${user}`);
+  }
+
   // send le hn
   try {
-    let resp = await axios.post(
-      "https://hn.rishi.cx",
-      {
-        query: `mutation ($to: String!, $from: String!, $amount: Float!) {
-      send(data: {from: $from, to: $to, balance: $amount}) {
-        id
-      }
-    }`,
-        variables: {
-          from: process.env.HN_USER_ID,
-          to: user,
-          amount: event.Amount,
-        },
-      },
-      {
-        headers: {
-          secret: process.env.HN_TOKEN,
-        },
-      }
-    );
-
-    if (resp.data.data.errors && resp.data.data.errors.length > 0) {
-      throw {
-        response: resp,
-      };
-    }
+    send(user, process.env.HN_USER_ID, event.Amount);
   } catch (e) {
-    console.log(e.response.data);
+    console.log(e.response);
     res.status(500).send("internal server error :(");
     return;
   }
