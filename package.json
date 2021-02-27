@@ -10,6 +10,7 @@
   "dependencies": {
     "@slack/web-api": "^6.0.0",
     "airtable": "^0.10.1",
+    "graphql": "^15.5.0",
     "graphql-request": "^3.4.0",
     "next": "10.0.7",
     "react": "17.0.1",
